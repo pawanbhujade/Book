@@ -14,40 +14,37 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import in.book.service.Fileservice;
 
 @Service
-public class FileserviceImpl implements Fileservice{
+public class FileserviceImpl implements Fileservice {
 
 	@Autowired
-	private   AmazonS3 amazonS3;
-	
+	private AmazonS3 amazonS3;
+
 	@Value("${bucketName}")
 	private String bucketname;
-	
+
 	@Override
 	public String saveFile(MultipartFile file) {
-		String originalfileName=file.getOriginalFilename();
-	
-		try{
-		File file2=convertMultiPartToFile(file);
-		
-	PutObjectResult objectResult=	amazonS3.putObject(bucketname,originalfileName,file2);
-	
-	return objectResult.getContentMd5();
+		String originalfileName = file.getOriginalFilename();
+
+		try {
+			File file2 = convertMultiPartToFile(file);
+
+			PutObjectResult objectResult = amazonS3.putObject(bucketname, originalfileName, file2);
+
+			return objectResult.getContentMd5();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
-		catch (Exception e) {
-		throw new RuntimeException(e);
-		}
-	
+
 	}
 
 	
-	  private File convertMultiPartToFile(MultipartFile file ) throws IOException
-	    {
-	        File convFile = new File( file.getOriginalFilename() );
-	        FileOutputStream   fos = new FileOutputStream( convFile );
-	        fos.write( file.getBytes() );
-	        fos.close();
-	        return convFile;
-	    }
-
+	private File convertMultiPartToFile(MultipartFile file) throws IOException {
+		File convFile = new File(file.getOriginalFilename());
+		FileOutputStream fos = new FileOutputStream(convFile);
+		fos.write(file.getBytes());
+		fos.close();
+		return convFile;
+	}
 
 }
